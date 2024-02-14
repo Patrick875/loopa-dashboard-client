@@ -3,7 +3,7 @@ import html2canvas from "html2canvas";
 import useFetchData from "../../Hooks/UseFetchData";
 import { useForm } from "react-hook-form";
 import { FadeLoader } from "react-spinners";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import InfoChart from "../../Shared/InfoChart";
 import { formatDate } from "../../Shared/utilFunctions";
 import GenerateExcell from "../../Shared/GenerateExcell";
@@ -72,138 +72,147 @@ function Dashboard() {
 
 	return (
 		<div className="min-h-screen ">
-			<div className="sticky top-0 h-[25vh]">
-				<div className="flex w-full p-4 py-2 bg-white ">
-					<div className="flex w-1/2 gap-2">
-						<p
-							onClick={() => setViewForm("table")}
-							className={` transition-all duration-150 text-xs font-bold   p-2 cursor-pointer ${
-								viewForm === "table"
-									? "bg-purple-950 rounded-[6px] text-white"
-									: null
-							}`}>
-							Table{" "}
-						</p>
-						<p
-							onClick={() => setViewForm("charts")}
-							className={`  transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
-								viewForm === "charts"
-									? " bg-purple-950 rounded-[6px] text-white "
-									: null
-							}`}>
-							Charts{" "}
-						</p>
-					</div>
-					<div className="flex w-1/2 gap-4 ">
-						{data && originalData && (
-							<GenerateExcell
-								data={originalData}
-								docName={`${originalData.regId}_data`}
-							/>
-						)}
-						{data && updatedData && viewForm === "charts" && (
-							<button
-								type="button"
-								onClick={handleDownloadImage}
-								className="p-2 rounded-[6px] text-xs font-bold text-white bg-black">
-								Download as image
-							</button>
-						)}
-					</div>
+			{data && data.length === 0 ? (
+				<div className="flex items-center justify-center min-h-screen bg-white">
+					<p className="p-3 text-center text-black ">
+						No plots are registered yet !!!
+					</p>
 				</div>
-				<hr className="bg-black border-[1.8px]cursor-pointer" />
-				<div className="">
-					<div className="sticky flex w-full gap-4 p-4 py-2 bg-white">
-						<p
-							onClick={() => setInfo("plotTemperature")}
-							className={` transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
-								info === "plotTemperature"
-									? "  text-white rounded-[10px]  bg-gray-600 "
-									: null
-							}`}>
-							Temperature{" "}
-						</p>
-						<p
-							onClick={() => setInfo("plotPh")}
-							className={` transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
-								info === "plotPh"
-									? "  text-white rounded-[10px]  bg-gray-600 "
-									: null
-							}`}>
-							PH{" "}
-						</p>
+			) : (
+				<React.Fragment>
+					<div className="">
+						<div className="flex w-full p-4 py-2 bg-white ">
+							<div className="flex w-1/2 gap-2">
+								<p
+									onClick={() => setViewForm("table")}
+									className={` transition-all duration-150 text-xs font-bold   p-2 cursor-pointer ${
+										viewForm === "table"
+											? "bg-purple-950 rounded-[6px] text-white"
+											: null
+									}`}>
+									Table{" "}
+								</p>
+								<p
+									onClick={() => setViewForm("charts")}
+									className={`  transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
+										viewForm === "charts"
+											? " bg-purple-950 rounded-[6px] text-white "
+											: null
+									}`}>
+									Charts{" "}
+								</p>
+							</div>
+							<div className="flex w-1/2 gap-4 ">
+								{data && originalData && (
+									<GenerateExcell
+										data={originalData}
+										docName={`${originalData.regId}_data`}
+									/>
+								)}
+								{data && updatedData && viewForm === "charts" && (
+									<button
+										type="button"
+										onClick={handleDownloadImage}
+										className="p-2 rounded-[6px] text-xs font-bold text-white bg-black">
+										Download as image
+									</button>
+								)}
+							</div>
+						</div>
+						<hr className="bg-black border-[1.8px]cursor-pointer" />
+						<div className="">
+							<div className="sticky flex w-full gap-4 p-4 py-2 bg-white">
+								<p
+									onClick={() => setInfo("plotTemperature")}
+									className={` transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
+										info === "plotTemperature"
+											? "  text-white rounded-[10px]  bg-gray-600 "
+											: null
+									}`}>
+									Temperature{" "}
+								</p>
+								<p
+									onClick={() => setInfo("plotPh")}
+									className={` transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
+										info === "plotPh"
+											? "  text-white rounded-[10px]  bg-gray-600 "
+											: null
+									}`}>
+									PH{" "}
+								</p>
+							</div>
+						</div>
+						<hr className="bg-black border-[1.8px]" />
+						<div className="mb-1 rounded-[8px] ">
+							{data && (
+								<div className={`grid grid-cols-12 bg-white p-3 py-2`}>
+									{data &&
+										data.map((el) => (
+											<p
+												key={el._id}
+												onClick={() => setSelectedPlot(el.regId)}
+												className={` transition-all duration-150 col-span-3 text-xs p-2 font-bold cursor-pointer ${
+													selectedPlot === el.regId
+														? "  text-white rounded-[10px]  bg-pink-950 "
+														: null
+												}`}>
+												{el.regId}
+											</p>
+										))}
+								</div>
+							)}
+						</div>
 					</div>
-				</div>
-				<hr className="bg-black border-[1.8px]" />
-				<div className="mb-1 rounded-[8px] ">
-					{data && (
-						<div className={`grid grid-flow-col bg-white p-3 py-2`}>
-							{data &&
-								data.map((el) => (
-									<p
-										key={el._id}
-										onClick={() => setSelectedPlot(el.regId)}
-										className={` transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
-											selectedPlot === el.regId
-												? "  text-white rounded-[10px]  bg-pink-950 "
-												: null
-										}`}>
-										{el.regId}
-									</p>
-								))}
+
+					{viewForm === "table" && data && data.length !== 0 && (
+						<div className="flex-1 h-[75vh] bg-white  ">
+							<div className="grid w-full grid-flow-col ">
+								<p className="p-2 text-xs font-bold">Date</p>
+								<p className="p-2 text-xs font-bold">
+									{" "}
+									{info === "plotTemperature" ? "Temperature" : "PH"}{" "}
+								</p>
+							</div>
+							<div className="grid w-full grid-flow-col overflow-y-auto max-h-96">
+								<div className="p-2 text-xs font-bold bg-gray-100 ">
+									{updatedData &&
+									updatedData.plotTemperature &&
+									updatedData.plotTemperature.length !== 0
+										? updatedData.plotTemperature.map((el) => (
+												<p key={el._id}>
+													{" "}
+													{new Date(el.updatedAt).toLocaleDateString("fr-FR")}
+												</p>
+										  ))
+										: null}
+								</div>
+								<div className="p-2 text-xs font-bold bg-gray-100">
+									{updatedData && updatedData[info] && updatedData[info] !== 0
+										? updatedData[info].map((el) => (
+												<p key={el._id}>{el.value ? el.value : 0}</p>
+										  ))
+										: null}
+								</div>
+							</div>
 						</div>
 					)}
-				</div>
-			</div>
-
-			{viewForm === "table" && (
-				<div className="flex-1 h-[75vh]">
-					<div className="grid w-full grid-flow-col bg-white">
-						<p className="p-2 text-xs font-bold">Date</p>
-						<p className="p-2 text-xs font-bold">
-							{" "}
-							{info === "plotTemperature" ? "Temperature" : "PH"}{" "}
-						</p>
-					</div>
-					<div className="grid w-full grid-flow-col overflow-y-scroll bg-white max-h-96">
-						<div className="p-2 text-xs font-bold bg-gray-100">
-							{updatedData &&
-							updatedData.plotTemperature &&
-							updatedData.plotTemperature.length !== 0
-								? updatedData.plotTemperature.map((el) => (
-										<p key={el._id}>
-											{" "}
-											{new Date(el.updatedAt).toLocaleDateString("fr-FR")}
-										</p>
-								  ))
-								: null}
+					{viewForm === "charts" && updatedData && (
+						<div className="flex flex-col flex-1 h-[75vh] p-2 bg-white">
+							<div ref={chartRef} className="p-2 h-[75vh]">
+								<InfoChart
+									data={updatedData[info]}
+									yKey="value"
+									yKeyName={info === "plotTemperature" ? "Temperature" : "PH"}
+									strokeColor="#ab154c"
+									titleText={`${
+										info === "plotTemperature" ? "Temperature" : "PH"
+									} Vs Date Graph`}
+								/>
+							</div>
 						</div>
-						<div className="p-2 text-xs font-bold bg-gray-100">
-							{updatedData && updatedData[info] && updatedData[info] !== 0
-								? updatedData[info].map((el) => (
-										<p key={el._id}>{el.value ? el.value : 0}</p>
-								  ))
-								: null}
-						</div>
-					</div>
-				</div>
+					)}
+				</React.Fragment>
 			)}
-			{viewForm === "charts" && (
-				<div className="flex flex-col flex-1 h-[75vh] p-2 bg-white">
-					<div ref={chartRef} className="p-2 h-[75vh]">
-						<InfoChart
-							data={updatedData[info]}
-							yKey="value"
-							yKeyName={info === "plotTemperature" ? "Temperature" : "PH"}
-							strokeColor="#ab154c"
-							titleText={`${
-								info === "plotTemperature" ? "Temperature" : "PH"
-							} Vs Date Graph`}
-						/>
-					</div>
-				</div>
-			)}
-
 			{loading && (
 				<div className="flex items-center justify-center w-full min-h-screen">
 					<FadeLoader color="#0C4981" loading={loading} size={16} />
