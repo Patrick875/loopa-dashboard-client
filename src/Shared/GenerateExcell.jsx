@@ -8,7 +8,7 @@ const GenerateExcell = ({ data, docName }) => {
 			data.plotTemperature &&
 			data.plotTemperature.map((el) => ({
 				date: formatDate(el.createdAt, true),
-				t: el.value,
+				T: el.value,
 			}));
 		const ph =
 			data &&
