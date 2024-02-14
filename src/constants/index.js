@@ -1,6 +1,6 @@
 import instance from "../API";
 
-// export const serverUrl = "https://icyizere-ems-server.onrender.com/api/v1";
+export const serverUrl = "https://loop-dashboard-server.onrender.com/api/v1";
 export const localServerUrl = "http://localhost:5200/api/v1";
 export const deleteProduct = async (id, setData, url, item) => {
 	const dataCat = { catId: id };
