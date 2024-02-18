@@ -1,7 +1,6 @@
 //jshint esversion:9
 import html2canvas from "html2canvas";
 import useFetchData from "../../Hooks/UseFetchData";
-import { useForm } from "react-hook-form";
 import { FadeLoader } from "react-spinners";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import InfoChart from "../../Shared/InfoChart";
@@ -10,7 +9,6 @@ import GenerateExcell from "../../Shared/GenerateExcell";
 
 function Dashboard() {
 	const { data, loading } = useFetchData("/plots/all");
-	const { register } = useForm();
 	const [selectedPlot, setSelectedPlot] = useState("");
 	const [viewForm, setViewForm] = useState("table");
 	const [info, setInfo] = useState("plotTemperature");
@@ -48,12 +46,19 @@ function Dashboard() {
 						createdAt: formatDate(el.createdAt),
 				  }))
 				: clickedPlot;
+			const formatedMoisture = clickedPlot
+				? clickedPlot.plotMoisture?.map((el) => ({
+						...el,
+						createdAt: formatDate(el.createdAt),
+				  }))
+				: clickedPlot;
 			const updatedData =
 				clickedPlot && formatedTemp && formattedPh
 					? {
 							...clickedPlot,
 							plotPh: formattedPh,
 							plotTemperature: formatedTemp,
+							plotMoisture: formatedMoisture,
 					  }
 					: clickedPlot;
 			return { data: clickedPlot, updatedData };
@@ -62,8 +67,8 @@ function Dashboard() {
 		}
 	};
 	const currentPlot = useMemo(() => getPlot(), [data, selectedPlot]);
-
 	const { data: originalData, updatedData } = currentPlot;
+
 	useEffect(() => {
 		if (data && data.length !== 0) {
 			setSelectedPlot(data[0].regId);
@@ -140,6 +145,15 @@ function Dashboard() {
 									}`}>
 									PH{" "}
 								</p>
+								<p
+									onClick={() => setInfo("plotMoisture")}
+									className={` transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
+										info === "plotMoisture"
+											? "  text-white rounded-[10px]  bg-gray-600 "
+											: null
+									}`}>
+									Moisture{" "}
+								</p>
 							</div>
 						</div>
 						<hr className="bg-black border-[1.8px]" />
@@ -170,7 +184,11 @@ function Dashboard() {
 								<p className="p-2 text-xs font-bold">Date</p>
 								<p className="p-2 text-xs font-bold">
 									{" "}
-									{info === "plotTemperature" ? "Temperature" : "PH"}{" "}
+									{info === "plotTemperature"
+										? "Temperature"
+										: info === "plotPh"
+										? "PH"
+										: "Moisture"}{" "}
 								</p>
 							</div>
 							<div className="grid w-full grid-flow-col overflow-y-auto max-h-96">
@@ -202,10 +220,20 @@ function Dashboard() {
 								<InfoChart
 									data={updatedData[info]}
 									yKey="value"
-									yKeyName={info === "plotTemperature" ? "Temperature" : "PH"}
+									yKeyName={
+										info === "plotTemperature"
+											? "Temperature"
+											: info === "plotPh"
+											? "PH"
+											: "Moisture"
+									}
 									strokeColor="#ab154c"
 									titleText={`${
-										info === "plotTemperature" ? "Temperature" : "PH"
+										info === "plotTemperature"
+											? "Temperature"
+											: info === "plotPh"
+											? "PH"
+											: "Moisture"
 									} Vs Date Graph`}
 								/>
 							</div>

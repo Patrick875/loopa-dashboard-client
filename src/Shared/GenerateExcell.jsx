@@ -2,7 +2,6 @@ import { exportToExcel, formatDate } from "./utilFunctions";
 
 const GenerateExcell = ({ data, docName }) => {
 	const handleClickExport = () => {
-		console.log("Export button clicked!", data); // Log a message to check if the function is being called
 		const temperature =
 			data &&
 			data.plotTemperature &&
@@ -17,14 +16,19 @@ const GenerateExcell = ({ data, docName }) => {
 				createdAt: formatDate(el.createdAt, true),
 				ph: el.value,
 			}));
+		const moisture =
+			data &&
+			data.plotMoisture &&
+			data.plotMoisture.map((el) => ({
+				createdAt: formatDate(el.createdAt, true),
+				moisture: el.value,
+			}));
 		const sheets = [
 			{ name: "Temperature", data: temperature },
 			{ name: "PH", data: ph },
+			{ name: "Moisture", data: moisture },
 		];
-		// Example data
 
-		console.log("sheets-sheets-sheets", sheets);
-		// Call exportToExcel function with your data
 		exportToExcel(sheets, docName);
 	};
 
