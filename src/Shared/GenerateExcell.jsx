@@ -4,23 +4,23 @@ const GenerateExcell = ({ data, docName }) => {
 	const handleClickExport = () => {
 		const temperature =
 			data &&
-			data.plotTemperature &&
-			data.plotTemperature.map((el) => ({
-				date: formatDate(el.createdAt, true),
+			data.TEMPERATURE &&
+			data.TEMPERATURE.map((el) => ({
+				Date: formatDate(el.createdAt, true),
 				T: el.value,
 			}));
 		const ph =
 			data &&
-			data.plotPh &&
-			data.plotPh.map((el) => ({
-				createdAt: formatDate(el.createdAt, true),
+			data.PH &&
+			data.PH.map((el) => ({
+				Date: formatDate(el.createdAt, true),
 				ph: el.value,
 			}));
 		const moisture =
 			data &&
-			data.plotMoisture &&
-			data.plotMoisture.map((el) => ({
-				createdAt: formatDate(el.createdAt, true),
+			data.MOISURE &&
+			data.MOISURE.map((el) => ({
+				Date: formatDate(el.createdAt, true),
 				moisture: el.value,
 			}));
 		const sheets = [

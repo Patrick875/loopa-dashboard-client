@@ -1,17 +1,18 @@
 //jshint esversion:9
 import html2canvas from "html2canvas";
-import useFetchData from "../../Hooks/UseFetchData";
-import { FadeLoader } from "react-spinners";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import InfoChart from "../../Shared/InfoChart";
+import InfoCharts from "../../Shared/InfoCharts";
 import { formatDate } from "../../Shared/utilFunctions";
 import GenerateExcell from "../../Shared/GenerateExcell";
+import axios from "axios";
 
 function Dashboard() {
-	const { data, loading } = useFetchData("/plots/all");
+	const [data, setData] = useState(null);
+	const [availablePlots, setAvailablePlots] = useState([]);
+	const [loading, setLoading] = useState(false);
 	const [selectedPlot, setSelectedPlot] = useState("");
 	const [viewForm, setViewForm] = useState("table");
-	const [info, setInfo] = useState("plotTemperature");
+	const [info, setInfo] = useState("TEMPERATURE");
 	const chartRef = useRef();
 	const handleDownloadImage = async () => {
 		const element = chartRef.current;
@@ -22,7 +23,7 @@ function Dashboard() {
 
 		if (typeof link.download === "string") {
 			link.href = data;
-			link.download = "image.png";
+			link.download = `${info} Vs Time chart / Batch ${selectedPlot}`;
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
@@ -31,37 +32,51 @@ function Dashboard() {
 		}
 	};
 	const getPlot = () => {
-		if (data) {
+		if (data && data.feeds && data.feeds.length !== 0) {
 			const clickedPlot =
-				data && data.filter((el) => el.regId === selectedPlot)[0];
+				data && data.feeds.filter((el) => el.field1 === selectedPlot);
+
 			const formattedPh = clickedPlot
-				? clickedPlot.plotPh.map((el) => ({
-						...el,
-						createdAt: formatDate(el.createdAt),
+				? clickedPlot.map((el) => ({
+						value: el.field3,
+						createdAt: formatDate(el.created_at),
 				  }))
 				: clickedPlot;
 			const formatedTemp = clickedPlot
-				? clickedPlot.plotTemperature.map((el) => ({
-						...el,
-						createdAt: formatDate(el.createdAt),
+				? clickedPlot.map((el) => ({
+						value: el.field2,
+						createdAt: formatDate(el.created_at),
 				  }))
 				: clickedPlot;
 			const formatedMoisture = clickedPlot
-				? clickedPlot.plotMoisture?.map((el) => ({
-						...el,
-						createdAt: formatDate(el.createdAt),
+				? clickedPlot.map((el) => ({
+						value: el.field4,
+						createdAt: formatDate(el.created_at),
 				  }))
 				: clickedPlot;
 			const updatedData =
 				clickedPlot && formatedTemp && formattedPh
 					? {
-							...clickedPlot,
-							plotPh: formattedPh,
-							plotTemperature: formatedTemp,
-							plotMoisture: formatedMoisture,
+							PH: formattedPh,
+							TEMPERATURE: formatedTemp,
+							MOISURE: formatedMoisture,
 					  }
 					: clickedPlot;
-			return { data: clickedPlot, updatedData };
+			const originalData = {
+				PH: clickedPlot.map((el) => ({
+					value: el.field3,
+					createdAt: el.created_at,
+				})),
+				TEMPERATURE: clickedPlot.map((el) => ({
+					value: el.field2,
+					createdAt: el.created_at,
+				})),
+				MOISURE: clickedPlot.map((el) => ({
+					value: el.field4,
+					createdAt: el.created_at,
+				})),
+			};
+			return { data: originalData, updatedData };
 		} else {
 			return { data: null, updatedData: null };
 		}
@@ -70,18 +85,43 @@ function Dashboard() {
 	const { data: originalData, updatedData } = currentPlot;
 
 	useEffect(() => {
-		if (data && data.length !== 0) {
-			setSelectedPlot(data[0].regId);
+		const getData = async () => {
+			setLoading(true);
+			await axios
+				.get(
+					"https://api.thingspeak.com/channels/2439297/feeds.json?api_key=RYQ1XWVAOGJCFLYV&results=80000"
+				)
+				.then((res) => {
+					setData(res.data);
+
+					const plots =
+						res.data && res.data.feeds
+							? res.data.feeds.map((el) => el.field1)
+							: [];
+
+					const uniquePlots = [...new Set(plots)];
+					setAvailablePlots(uniquePlots);
+				})
+				.catch((err) => {
+					console.log("err", err);
+				})
+				.finally(() => {
+					setLoading(false);
+				});
+		};
+		getData();
+	}, []);
+	useEffect(() => {
+		if (availablePlots && availablePlots.length !== 0) {
+			setSelectedPlot(availablePlots[0]);
 		}
-	}, [data]);
+	}, [availablePlots]);
 
 	return (
 		<div className="min-h-screen ">
-			{data && data.length === 0 ? (
+			{!loading && data && data.feeds.length === 0 ? (
 				<div className="flex items-center justify-center min-h-screen bg-white">
-					<p className="p-3 text-center text-black ">
-						No plots are registered yet !!!
-					</p>
+					<p className="p-3 text-center text-black ">No data available !!!</p>
 				</div>
 			) : (
 				<React.Fragment>
@@ -107,48 +147,50 @@ function Dashboard() {
 									Charts{" "}
 								</p>
 							</div>
-							<div className="flex w-1/2 gap-4 ">
-								{data && originalData && (
-									<GenerateExcell
-										data={originalData}
-										docName={`${originalData.regId}_data`}
-									/>
-								)}
-								{data && updatedData && viewForm === "charts" && (
-									<button
-										type="button"
-										onClick={handleDownloadImage}
-										className="p-2 rounded-[6px] text-xs font-bold text-white bg-black">
-										Download as image
-									</button>
-								)}
-							</div>
+							{
+								<div className="flex w-1/2 gap-4 ">
+									{data && originalData && (
+										<GenerateExcell
+											data={originalData}
+											docName={`BATCH-${selectedPlot}_data`}
+										/>
+									)}
+									{data && updatedData && viewForm === "charts" && (
+										<button
+											type="button"
+											onClick={handleDownloadImage}
+											className="p-2 rounded-[6px] text-xs font-bold text-white bg-black">
+											Download as image
+										</button>
+									)}
+								</div>
+							}
 						</div>
 						<hr className="bg-black border-[1.8px]cursor-pointer" />
 						<div className="">
 							<div className="sticky flex w-full gap-4 p-4 py-2 bg-white">
 								<p
-									onClick={() => setInfo("plotTemperature")}
+									onClick={() => setInfo("TEMPERATURE")}
 									className={` transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
-										info === "plotTemperature"
+										info === "TEMPERATURE"
 											? "  text-white rounded-[10px]  bg-gray-600 "
 											: null
 									}`}>
 									Temperature{" "}
 								</p>
 								<p
-									onClick={() => setInfo("plotPh")}
+									onClick={() => setInfo("PH")}
 									className={` transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
-										info === "plotPh"
+										info === "PH"
 											? "  text-white rounded-[10px]  bg-gray-600 "
 											: null
 									}`}>
 									PH{" "}
 								</p>
 								<p
-									onClick={() => setInfo("plotMoisture")}
+									onClick={() => setInfo("MOISURE")}
 									className={` transition-all duration-150  text-xs p-2 font-bold cursor-pointer ${
-										info === "plotMoisture"
+										info === "MOISURE"
 											? "  text-white rounded-[10px]  bg-gray-600 "
 											: null
 									}`}>
@@ -160,17 +202,18 @@ function Dashboard() {
 						<div className="mb-1 rounded-[8px] ">
 							{data && (
 								<div className={`grid grid-cols-12 bg-white p-3 py-2`}>
-									{data &&
-										data.map((el) => (
+									{availablePlots &&
+										availablePlots.length !== 0 &&
+										availablePlots.map((el) => (
 											<p
-												key={el._id}
-												onClick={() => setSelectedPlot(el.regId)}
+												key={el}
+												onClick={() => setSelectedPlot(el)}
 												className={` transition-all duration-150 col-span-3 text-xs p-2 font-bold cursor-pointer ${
-													selectedPlot === el.regId
+													selectedPlot === el
 														? "  text-white rounded-[10px]  bg-pink-950 "
 														: null
 												}`}>
-												{el.regId}
+												{el}
 											</p>
 										))}
 								</div>
@@ -184,9 +227,9 @@ function Dashboard() {
 								<p className="p-2 text-xs font-bold">Date</p>
 								<p className="p-2 text-xs font-bold">
 									{" "}
-									{info === "plotTemperature"
+									{info === "TEMPERATURE"
 										? "Temperature"
-										: info === "plotPh"
+										: info === "PH"
 										? "PH"
 										: "Moisture"}{" "}
 								</p>
@@ -194,20 +237,19 @@ function Dashboard() {
 							<div className="grid w-full grid-flow-col overflow-y-auto max-h-96">
 								<div className="p-2 text-xs font-bold bg-gray-100 ">
 									{updatedData &&
-									updatedData.plotTemperature &&
-									updatedData.plotTemperature.length !== 0
-										? updatedData.plotTemperature.map((el) => (
-												<p key={el._id}>
-													{" "}
-													{new Date(el.updatedAt).toLocaleDateString("fr-FR")}
-												</p>
+									updatedData["TEMPERATURE"] &&
+									updatedData["TEMPERATURE"].length !== 0
+										? updatedData["TEMPERATURE"].map((el) => (
+												<p key={crypto.randomUUID()}> {el.createdAt}</p>
 										  ))
 										: null}
 								</div>
 								<div className="p-2 text-xs font-bold bg-gray-100">
 									{updatedData && updatedData[info] && updatedData[info] !== 0
 										? updatedData[info].map((el) => (
-												<p key={el._id}>{el.value ? el.value : 0}</p>
+												<p key={crypto.randomUUID()}>
+													{el.value ? el.value : 0}
+												</p>
 										  ))
 										: null}
 								</div>
@@ -215,36 +257,19 @@ function Dashboard() {
 						</div>
 					)}
 					{viewForm === "charts" && updatedData && (
-						<div className="flex flex-col flex-1 h-[75vh] p-2 bg-white">
-							<div ref={chartRef} className="p-2 h-[75vh]">
-								<InfoChart
+						<div
+							ref={chartRef}
+							className="flex flex-col flex-1 h-[78vh] p-2 bg-white">
+							<div className="p-2 h-[70vh]">
+								<InfoCharts
 									data={updatedData[info]}
-									yKey="value"
-									yKeyName={
-										info === "plotTemperature"
-											? "Temperature"
-											: info === "plotPh"
-											? "PH"
-											: "Moisture"
-									}
-									strokeColor="#ab154c"
-									titleText={`${
-										info === "plotTemperature"
-											? "Temperature"
-											: info === "plotPh"
-											? "PH"
-											: "Moisture"
-									} Vs Date Graph`}
+									info={info}
+									batch={selectedPlot}
 								/>
 							</div>
 						</div>
 					)}
 				</React.Fragment>
-			)}
-			{loading && (
-				<div className="flex items-center justify-center w-full min-h-screen">
-					<FadeLoader color="#0C4981" loading={loading} size={16} />
-				</div>
 			)}
 		</div>
 	);
@@ -260,3 +285,11 @@ export default Dashboard;
 // 		{...register("query")}
 // 	/>
 // </form>;
+
+// {
+// 	loading && (
+// 		<div className="flex items-center justify-center w-full min-h-screen">
+// 			<FadeLoader color="#0C4981" loading={loading} size={16} />
+// 		</div>
+// 	);
+// }

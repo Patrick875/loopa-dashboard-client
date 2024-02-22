@@ -91,7 +91,7 @@ const SideBarNav = ({ isOpen, setIsOpen }) => {
 					</ul>
 				</div>
 				<div className="h-[20vh] bg-slate-900 p-2">
-					<p to="user" className="flex items-center px-4 py-2 text-white">
+					<div to="user" className="flex items-center px-4 py-2 text-white">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -107,7 +107,7 @@ const SideBarNav = ({ isOpen, setIsOpen }) => {
 						</svg>
 
 						<p className="px-1 text-xs font-medium">{user.fullname}</p>
-					</p>
+					</div>
 					<Link
 						to=""
 						className="flex items-center px-4 py-2 rounded-md "

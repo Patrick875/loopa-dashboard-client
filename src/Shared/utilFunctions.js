@@ -21,14 +21,16 @@ export function formatDate(customDateString, isFull = false) {
 
 export function exportToExcel(sheets, filename) {
 	const wb = XLSX.utils.book_new();
-
 	for (const sheet of sheets) {
 		const { data } = sheet;
-		console.log("data-data-data", data);
 		const headers = Object.keys(data[0]);
 
+		const titleHeaders = headers.map((el) =>
+			el === "T" ? "TEMPERATURE" : el.toUpperCase()
+		);
+
 		const dataArray = [
-			headers,
+			titleHeaders,
 			...data.map((obj) => headers.map((key) => obj[key])),
 		];
 		const ws = XLSX.utils.aoa_to_sheet(dataArray);

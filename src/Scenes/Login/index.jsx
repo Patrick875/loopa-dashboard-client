@@ -90,21 +90,23 @@ const Login = () => {
 								{...register("password")}
 							/>
 						</div>
+						<div className="py-4">
+							<button
+								type="submit"
+								className="w-full   text-xs  px-3 py-2  font-bold text-center text-white rounded-[32px] shadow-lg bg-gradient-to-t from-teal-800 to-teal-900 decoration-none mt-4 mb-2">
+								{!loading ? (
+									"Login"
+								) : (
+									<HashLoader color="#fff" loading={loading} size={15} />
+								)}
+							</button>
+						</div>
 
-						<button
-							type="submit"
-							className="w-full  text-xs  px-3 py-2 font-bold text-center text-white rounded-[32px] shadow-lg bg-gradient-to-t from-teal-800 to-teal-900 decoration-none mt-4 mb-2">
-							{!loading ? (
-								"Login"
-							) : (
-								<HashLoader color="#fff" loading={loading} size={15} />
-							)}
-						</button>
-						<Link
+						{/*<Link
 							to="/resetpassword"
 							className="block my-4 text-xs font-bold text-center text-sky-700">
 							Reset Password
-						</Link>
+							</Link>*/}
 					</form>
 				</motion.div>
 			</div>
