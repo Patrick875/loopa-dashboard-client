@@ -49,7 +49,7 @@ const Login = () => {
 					initial={{ x: -50, scale: 0.7, opacity: 0 }}
 					animate={{ x: 0, opacity: 1, scale: 1 }}
 					transition={{ duration: 0.6 }}
-					className="rounded-[12px] md:w-[34%] w-[80%] shadow-lg bg-slate-50 my-2">
+					className="rounded-[12px] md:max-lg:w-[70%] lg:w-[40%] w-[80%] shadow-lg bg-slate-50 my-2">
 					<div className="w-full">
 						<img src={Logo} className="block w-20 h-20" />
 					</div>
@@ -58,7 +58,7 @@ const Login = () => {
 					initial={{ x: 50, scale: 0.5, opacity: 0 }}
 					animate={{ x: 0, opacity: 1, scale: 1 }}
 					transition={{ duration: 0.4, delay: 0.4 }}
-					className="md:w-[34%] w-[80%] shadow-lg  rounded-[16px] bg-slate-50">
+					className="md:max-lg:w-[70%] lg:w-[40%] w-[80%] shadow-lg  rounded-[16px] bg-slate-50">
 					<p className="px-4 my-2 font-extrabold ">Signin </p>
 
 					<form onSubmit={handleSubmit(login)} className="px-4 mx-2 ">

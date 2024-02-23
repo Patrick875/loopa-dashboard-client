@@ -1,4 +1,5 @@
 import { exportToExcel, formatDate } from "./utilFunctions";
+import { PiMicrosoftExcelLogoThin } from "react-icons/pi";
 
 const GenerateExcell = ({ data, docName }) => {
 	const handleClickExport = () => {
@@ -35,9 +36,10 @@ const GenerateExcell = ({ data, docName }) => {
 	return (
 		<div>
 			<button
-				className="p-2 text-white text-xs rounded-[6px] bg-emerald-800"
+				className="p-2 sm:px-4 flex gap-2 items-center text-white text-xs rounded-[6px] bg-emerald-800"
 				onClick={handleClickExport}>
-				Export to Excel
+				<PiMicrosoftExcelLogoThin />
+				Excel
 			</button>
 		</div>
 	);

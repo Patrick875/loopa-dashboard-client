@@ -27,6 +27,7 @@ function Admin() {
 					className={`${
 						isOpen ? " hidden " : " "
 					} min-h-screen  p-0 bg-[rgb(255,255,255,0.5)]`}>
+					{!isAboveSmallScenes && <TopBar />}
 					<Outlet />
 				</div>
 			</div>

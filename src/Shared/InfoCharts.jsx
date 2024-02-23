@@ -61,7 +61,7 @@ function InfoCharts({ data, info, batch }) {
 
 	return (
 		<div className="h-[70vh] w-full chart-container">
-			<Line data={displayData} options={options} />
+			<Line data={displayData} options={options} className="shrink-0" />
 		</div>
 	);
 }

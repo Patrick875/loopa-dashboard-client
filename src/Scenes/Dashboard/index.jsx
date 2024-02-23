@@ -5,6 +5,7 @@ import InfoCharts from "../../Shared/InfoCharts";
 import { formatDate } from "../../Shared/utilFunctions";
 import GenerateExcell from "../../Shared/GenerateExcell";
 import axios from "axios";
+import { LiaDownloadSolid } from "react-icons/lia";
 
 function Dashboard() {
 	const [data, setData] = useState(null);
@@ -126,8 +127,8 @@ function Dashboard() {
 			) : (
 				<React.Fragment>
 					<div className="">
-						<div className="flex w-full p-4 py-2 bg-white ">
-							<div className="flex w-1/2 gap-2">
+						<div className="flex justify-between w-full gap-2 p-4 py-2 bg-white sm:justify-stretch ">
+							<div className="flex gap-2 sm:w-1/2">
 								<p
 									onClick={() => setViewForm("table")}
 									className={` transition-all duration-150 text-xs font-bold   p-2 cursor-pointer ${
@@ -148,7 +149,7 @@ function Dashboard() {
 								</p>
 							</div>
 							{
-								<div className="flex w-1/2 gap-4 ">
+								<div className="flex items-center gap-4 sm:w-1/2 ">
 									{data && originalData && (
 										<GenerateExcell
 											data={originalData}
@@ -159,8 +160,9 @@ function Dashboard() {
 										<button
 											type="button"
 											onClick={handleDownloadImage}
-											className="p-2 rounded-[6px] text-xs font-bold text-white bg-black">
-											Download as image
+											className="p-2 sm:p-2 flex  items-center gap-2 rounded-[6px] text-xs font-bold text-white bg-black">
+											Image
+											<LiaDownloadSolid />
 										</button>
 									)}
 								</div>
@@ -257,10 +259,10 @@ function Dashboard() {
 						</div>
 					)}
 					{viewForm === "charts" && updatedData && (
-						<div
-							ref={chartRef}
-							className="flex flex-col flex-1 h-[78vh] p-2 bg-white">
-							<div className="p-2 h-[70vh]">
+						<div className="flex flex-col flex-1 overflow-x-scroll sm:overflow-hidden  h-[78vh] p-2 bg-white">
+							<div
+								ref={chartRef}
+								className="p-2 pb-4 h-[70vh]  sm:w-full w-[800px]">
 								<InfoCharts
 									data={updatedData[info]}
 									info={info}

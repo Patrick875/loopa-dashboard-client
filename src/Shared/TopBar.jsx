@@ -1,31 +1,22 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../Context/UserContext";
 
-const TopBar = ({ setShowSide }) => {
-	const navigate = useNavigate();
+const TopBar = () => {
 	const { logoutUser, user } = useUser();
+	const navigate = useNavigate();
 	return (
 		<div className="flex items-center justify-between  rounded-[8px] px-0 py-4 mb-2 text-white bg-[rgb(4,47,4,0.90)] md:p-4 md:justify-end align-content-center">
 			<div className="flex items-center justify-between w-full px-2 md:justify-end md:basis-1/2">
-				<button
-					onClick={() => setShowSide((prev) => !prev)}
-					className="p-2 shadow-xl md:hidden">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						strokeWidth="1.5"
-						stroke="currentColor"
-						className="w-5 h-5">
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+				<div className="shadow-xl md:hidden">
+					<div onClick={() => navigate("")} className="cursor-pointer">
+						<img
+							src="/logo-mob.png"
+							className="block object-contain w-20 h-10"
 						/>
-					</svg>
-				</button>
+					</div>
+				</div>
 				<div className="flex gap-4 item-center">
-					<Link to="user" className="flex items-center">
+					<div className="flex items-center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -41,7 +32,7 @@ const TopBar = ({ setShowSide }) => {
 						</svg>
 
 						<p className="px-2 text-xs font-medium">{user.fullname}</p>
-					</Link>
+					</div>
 					<button
 						className="flex items-center px-4 py-1 rounded-md bg-slate-900"
 						onClick={() => {
