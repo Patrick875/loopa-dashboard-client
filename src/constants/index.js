@@ -1,6 +1,6 @@
 import instance from "../API";
 
-export const serverUrl = "https://loop-dashboard-server.onrender.com/";
+export const serverUrl = "https://relieved-plum-kangaroo.cyclic.app/";
 export const localServerUrl = "http://localhost:5200/";
 export const deleteProduct = async (id, setData, url, item) => {
 	const dataCat = { catId: id };
