@@ -13,10 +13,10 @@ const Login = () => {
 	const [error, setError] = useState(false);
 	const [message, setMessage] = useState(null);
 	const [loading, setLoading] = useState(null);
-	const navigateToDashboard = (user) => {
+	const navigateToDashboard = () => {
 		navigate("/admin");
 	};
-	const { loginUser, user } = useUser();
+	const { loginUser } = useUser();
 	const navigate = useNavigate();
 	const handleOnFocus = () => {
 		setError(null);
@@ -24,18 +24,16 @@ const Login = () => {
 	};
 	const login = async (data) => {
 		setLoading(true);
-		console.log("data", data);
 		await instance
 			.post("/login", { ...data, userCredentials: data.email })
 			.then((res) => {
-				console.log("res", res);
 				loginUser(res.data.user);
 				navigateToDashboard(res.data.user);
 			})
 			.catch((err) => {
 				console.log(err);
 				setError(true);
-				setMessage(err.response.data.message);
+				// setMessage(err.response.data.message);
 			})
 			.finally(() => {
 				setLoading(false);

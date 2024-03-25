@@ -95,12 +95,15 @@ function Dashboard() {
 				.then((res) => {
 					setData(res.data);
 
+					console.log("res", res);
+
 					const plots =
 						res.data && res.data.feeds
 							? res.data.feeds.map((el) => el.field1)
 							: [];
 
 					const uniquePlots = [...new Set(plots)];
+
 					setAvailablePlots(uniquePlots);
 				})
 				.catch((err) => {
@@ -215,7 +218,7 @@ function Dashboard() {
 														? "  text-white rounded-[10px]  bg-pink-950 "
 														: null
 												}`}>
-												{el}
+												Batch {el}
 											</p>
 										))}
 								</div>
@@ -278,20 +281,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
-// <form className="mx-2 flex items-center gap-3 py-1 px-4 bg-white rounded-[8px] ">
-// 	<HiMagnifyingGlass className="w-4 h-4 text-login-blue " />
-// 	<input
-// 		placeholder="Search"
-// 		className="bg-transparent focus:outline-none focus-border-none placeholder:text-xs placeholder:font-normal"
-// 		{...register("query")}
-// 	/>
-// </form>;
-
-// {
-// 	loading && (
-// 		<div className="flex items-center justify-center w-full min-h-screen">
-// 			<FadeLoader color="#0C4981" loading={loading} size={16} />
-// 		</div>
-// 	);
-// }
