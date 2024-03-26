@@ -6,6 +6,7 @@ import { formatDate } from "../../Shared/utilFunctions";
 import GenerateExcell from "../../Shared/GenerateExcell";
 import axios from "axios";
 import { LiaDownloadSolid } from "react-icons/lia";
+import instance from "../../API";
 
 function Dashboard() {
 	const [data, setData] = useState(null);
@@ -40,19 +41,19 @@ function Dashboard() {
 			const formattedPh = clickedPlot
 				? clickedPlot.map((el) => ({
 						value: el.field3,
-						createdAt: formatDate(el.created_at),
+						createdAt: formatDate(el.created_at, true),
 				  }))
 				: clickedPlot;
 			const formatedTemp = clickedPlot
 				? clickedPlot.map((el) => ({
 						value: el.field2,
-						createdAt: formatDate(el.created_at),
+						createdAt: formatDate(el.created_at, true),
 				  }))
 				: clickedPlot;
 			const formatedMoisture = clickedPlot
 				? clickedPlot.map((el) => ({
 						value: el.field4,
-						createdAt: formatDate(el.created_at),
+						createdAt: formatDate(el.created_at, true),
 				  }))
 				: clickedPlot;
 			const updatedData =
@@ -88,15 +89,13 @@ function Dashboard() {
 	useEffect(() => {
 		const getData = async () => {
 			setLoading(true);
-			await axios
+			await instance
 				.get(
 					"https://api.thingspeak.com/channels/2439297/feeds.json?api_key=RYQ1XWVAOGJCFLYV&results=80000"
 				)
 				.then((res) => {
 					setData(res.data);
-
 					console.log("res", res);
-
 					const plots =
 						res.data && res.data.feeds
 							? res.data.feeds.map((el) => el.field1)

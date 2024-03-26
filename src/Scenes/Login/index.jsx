@@ -1,4 +1,3 @@
-//jshint esversion:9
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import instance from "../../API";

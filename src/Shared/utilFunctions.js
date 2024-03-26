@@ -13,7 +13,7 @@ export function formatDate(customDateString, isFull = false) {
 	const minutes = date.getMinutes().toString().padStart(2, "0");
 
 	if (isFull) {
-		return `${day}-${month}-${year} ${hours}:${minutes}`;
+		return `${day}/${month}/${year} ${hours}:${minutes}`;
 	} else {
 		return ` ${hours}:${minutes}`;
 	}
